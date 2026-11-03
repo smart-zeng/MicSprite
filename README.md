@@ -4,6 +4,10 @@
 
 ## 依赖
 
+不必须用 `micsprite-all`。各模块独立发布，按格式和 UI 壳按需组合即可。
+
+**全量（SVGA + PAG + GIF/WebP）：**
+
 ```kotlin
 dependencies {
     implementation("io.github.smart-zeng:micsprite-all:1.0.0")
@@ -11,7 +15,33 @@ dependencies {
     // 或 View：
     // implementation("io.github.smart-zeng:micsprite-view:1.0.0")
 }
+```
 
+**按格式拆分（示例：只要 SVGA + Compose）：**
+
+```kotlin
+dependencies {
+    implementation("io.github.smart-zeng:micsprite-decoder-svga:1.0.0")
+    implementation("io.github.smart-zeng:micsprite-compose:1.0.0")
+    // 需要 PAG / GIF / WebP 时再加：
+    // implementation("io.github.smart-zeng:micsprite-decoder-pag:1.0.0")
+    // implementation("io.github.smart-zeng:micsprite-decoder-frames:1.0.0")
+    // View 壳：
+    // implementation("io.github.smart-zeng:micsprite-view:1.0.0")
+}
+```
+
+| 模块 | 说明 |
+|---|---|
+| `micsprite-core` | 烘焙、缓存、OpenGL；被其它模块 `api` 带入，一般不用单独写 |
+| `micsprite-decoder-svga` | SVGA |
+| `micsprite-decoder-pag` | PAG |
+| `micsprite-decoder-frames` | GIF / Animated WebP |
+| `micsprite-all` | 上面三个 decoder 的聚合 |
+| `micsprite-compose` | Compose 壳 |
+| `micsprite-view` | View 壳 |
+
+```kotlin
 android {
     packaging {
         resources {
@@ -23,7 +53,7 @@ android {
 
 仓库需要 [JitPack](https://jitpack.io)（SVGAPlayer 走 JitPack）。App 需要 `INTERNET` 权限。
 
-Decoder 对重 SDK 使用 `implementation`，不会传到接入方的编译 classpath；运行时仍会打进 APK。
+Decoder 对重 SDK 使用 `implementation`，不会传到接入方的编译 classpath；运行时仍会打进 APK。只引某个 decoder 时，对应三方库才会进包。
 
 ## 三方库
 
