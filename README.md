@@ -55,6 +55,8 @@ android {
 
 Decoder 对重 SDK 使用 `implementation`，不会传到接入方的编译 classpath；运行时仍会打进 APK。只引某个 decoder 时，对应三方库才会进包。
 
+也可以只引 `micsprite-core` + Compose/View 壳，自己实现 `MicSpriteDecoder` 并注册，不必依赖官方 decoder 模块。见下方「注入解码器」。
+
 ## 三方库
 
 只列出各模块自己引入的库。`micsprite-view`、`micsprite-all` 没有直接三方依赖。
@@ -183,6 +185,49 @@ overlay.removeHeadwear(micId)    // 摘掉
 ```
 
 锚点相对于 `MicSpriteSurfaceView`。可用 `getLocationOnScreen` 做差。离开页面时会自动释放内存；磁盘缓存保留。
+
+## 注入解码器
+
+官方 `micsprite-decoder-*` 不是必须的。实现 `MicSpriteDecoder`，在首次烘焙前调用 `MicSpriteDecoderRegistry.register` 即可；也可把实现类名写进 `META-INF/services/io.github.smartzeng.micsprite.core.MicSpriteDecoder`，由 ServiceLoader 自动发现。
+
+`supports` 决定这个 decoder 认哪些 url；`bake` 返回网格图集 `MicSpriteRaster`（像素需预乘 alpha）。可用 `MicSpriteBaker.materialize` 下载到本地，再用 `MicSpriteBaker.buildStrip` / `drawFitCenter` 抽帧。
+
+```kotlin
+class MyDecoder : MicSpriteDecoder {
+    override fun supports(url: String): Boolean =
+        url.endsWith(".mysprite", ignoreCase = true)
+
+    override suspend fun bake(
+        context: Context,
+        url: String,
+        maxTextureSize: Int,
+        frameSizePx: Int,
+    ): MicSpriteRaster? {
+        val file = MicSpriteBaker.materialize(context, url) ?: return null
+        // 自行解码 file，抽成图集；也可走 MicSpriteBaker.buildStrip { ... }
+        return MicSpriteBaker.buildStrip(
+            totalFrames = 30,
+            originalFps = 15,
+            maxTextureSize = maxTextureSize,
+            yieldEvery = MicSpriteBaker.backgroundYieldEvery,
+        ) { srcIndex, canvas ->
+            // 把第 srcIndex 帧画到 canvas（边长 frameSizePx）
+        }
+    }
+}
+
+// Application.onCreate 或进入直播间前注册一次
+MicSpriteDecoderRegistry.register(MyDecoder())
+```
+
+注册后只依赖：
+
+```kotlin
+implementation("io.github.smart-zeng:micsprite-core:1.0.0")
+implementation("io.github.smart-zeng:micsprite-compose:1.0.0") // 或 micsprite-view
+```
+
+官方 decoder 与自定义 decoder 可并存；`resolve` 按注册顺序取第一个 `supports(url) == true` 的实现。
 
 ## 替换下载
 
