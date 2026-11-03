@@ -184,7 +184,25 @@ overlay.setHeadwear(micId, url)  // 戴上
 overlay.removeHeadwear(micId)    // 摘掉
 ```
 
-锚点相对于 `MicSpriteSurfaceView`。可用 `getLocationOnScreen` 做差。离开页面时会自动释放内存；磁盘缓存保留。
+锚点相对于 `MicSpriteSurfaceView`。可用 `getLocationOnScreen` 做差。离开页面时调用 `release()`（Compose 的 `rememberMicSpriteController` 会在 `onDispose` 自动调用）；最后一个 Controller 释放后会自动清掉内存图集，磁盘 WebP 保留。
+
+## 释放内存缓存
+
+内存紧张时可主动清掉进程内图集 Bitmap，不影响磁盘缓存，下次再用会重新从磁盘加载或重新烘焙：
+
+```kotlin
+MicSpriteBaker.clearMemoryCache()
+```
+
+适合挂在 `ComponentCallbacks2.onTrimMemory` / `onLowMemory`，例如：
+
+```kotlin
+override fun onTrimMemory(level: Int) {
+    if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
+        MicSpriteBaker.clearMemoryCache()
+    }
+}
+```
 
 ## 注入解码器
 
