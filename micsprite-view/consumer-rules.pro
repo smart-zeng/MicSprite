@@ -1,2 +1,2 @@
--keep class io.github.smartzeng.micsprite.view.** { *; }
--dontwarn io.github.smartzeng.micsprite.view.**
+-keep class com.github.smartzeng.micsprite.view.** { *; }
+-dontwarn com.github.smartzeng.micsprite.view.**

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "io.github.smartzeng.micsprite.decoder.svga"
+    namespace = "com.github.smartzeng.micsprite.decoder.svga"
     compileSdk {
         version = release(37)
     }

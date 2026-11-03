@@ -2,9 +2,10 @@ afterEvaluate {
     extensions.configure<org.gradle.api.publish.PublishingExtension>("publishing") {
         publications {
             register<MavenPublication>("release") {
-                groupId = "io.github.smart-zeng"
+                groupId = (findProperty("micspriteGroup") as? String)
+                    ?: "com.github.smart-zeng.MicSprite"
                 artifactId = project.name
-                version = "1.0.0"
+                version = (findProperty("micspriteVersion") as? String) ?: "1.0.1"
                 from(components.getByName("release"))
                 pom {
                     name.set(project.name)

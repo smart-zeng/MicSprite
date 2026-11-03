@@ -4,17 +4,17 @@ plugins {
 }
 
 android {
-    namespace = "io.github.smartzeng.micsprite.demo"
+    namespace = "com.github.smartzeng.micsprite.demo"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "io.github.smartzeng.micsprite.demo"
+        applicationId = "com.github.smartzeng.micsprite.demo"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "1.0.1"
     }
 
     buildTypes {
@@ -38,7 +38,7 @@ android {
 
     packaging {
         resources {
-            merges += "META-INF/services/io.github.smartzeng.micsprite.core.MicSpriteDecoder"
+            merges += "META-INF/services/com.github.smartzeng.micsprite.core.MicSpriteDecoder"
         }
     }
 }

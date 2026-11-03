@@ -1,2 +1,2 @@
--keep class io.github.smartzeng.micsprite.compose.** { *; }
--dontwarn io.github.smartzeng.micsprite.compose.**
+-keep class com.github.smartzeng.micsprite.compose.** { *; }
+-dontwarn com.github.smartzeng.micsprite.compose.**

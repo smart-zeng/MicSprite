@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "io.github.smartzeng.micsprite.view"
+    namespace = "com.github.smartzeng.micsprite.view"
     compileSdk {
         version = release(37)
     }

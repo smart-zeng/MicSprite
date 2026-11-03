@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "io.github.smartzeng.micsprite.core"
+    namespace = "com.github.smartzeng.micsprite.core"
     compileSdk {
         version = release(37)
     }

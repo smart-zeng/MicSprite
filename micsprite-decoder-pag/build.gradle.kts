@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "io.github.smartzeng.micsprite.decoder.pag"
+    namespace = "com.github.smartzeng.micsprite.decoder.pag"
     compileSdk {
         version = release(37)
     }

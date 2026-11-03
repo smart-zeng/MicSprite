@@ -1,9 +1,9 @@
-# MicSprite：不要再混淆本库，防止二次混淆。
--keep class io.github.smartzeng.micsprite.** { *; }
--dontwarn io.github.smartzeng.micsprite.**
+# Keep MicSprite; avoid double obfuscation.
+-keep class com.github.smartzeng.micsprite.** { *; }
+-dontwarn com.github.smartzeng.micsprite.**
 
--keep interface io.github.smartzeng.micsprite.core.MicSpriteDecoder { *; }
--keep class * implements io.github.smartzeng.micsprite.core.MicSpriteDecoder {
+-keep interface com.github.smartzeng.micsprite.core.MicSpriteDecoder { *; }
+-keep class * implements com.github.smartzeng.micsprite.core.MicSpriteDecoder {
     public <init>();
 }
 
@@ -19,4 +19,3 @@
 
 -keep class com.github.penfeizhou.animation.** { *; }
 -dontwarn com.github.penfeizhou.animation.**
-

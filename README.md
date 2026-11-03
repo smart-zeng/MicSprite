@@ -4,16 +4,31 @@
 
 ## 依赖
 
-不必须用 `micsprite-all`。各模块独立发布，按格式和 UI 壳按需组合即可。
+JitPack 多模块坐标为 `com.github.<用户>.<仓库>:<模块>:<Tag>`。本仓库声明与接入坐标一致：
+
+`com.github.smart-zeng.MicSprite:<模块名>:<Tag>`
+
+代码包名为 `com.github.smartzeng.micsprite.*`。
+
+不必须用 `micsprite-all`。各模块独立产物，按格式和 UI 壳按需组合即可。
+
+先加仓库：
+
+```kotlin
+repositories {
+    mavenCentral()
+    maven { url = uri("https://jitpack.io") }
+}
+```
 
 **全量（SVGA + PAG + GIF/WebP）：**
 
 ```kotlin
 dependencies {
-    implementation("io.github.smart-zeng:micsprite-all:1.0.0")
-    implementation("io.github.smart-zeng:micsprite-compose:1.0.0")
+    implementation("com.github.smart-zeng.MicSprite:micsprite-all:1.0.1")
+    implementation("com.github.smart-zeng.MicSprite:micsprite-compose:1.0.1")
     // 或 View：
-    // implementation("io.github.smart-zeng:micsprite-view:1.0.0")
+    // implementation("com.github.smart-zeng.MicSprite:micsprite-view:1.0.1")
 }
 ```
 
@@ -21,13 +36,13 @@ dependencies {
 
 ```kotlin
 dependencies {
-    implementation("io.github.smart-zeng:micsprite-decoder-svga:1.0.0")
-    implementation("io.github.smart-zeng:micsprite-compose:1.0.0")
+    implementation("com.github.smart-zeng.MicSprite:micsprite-decoder-svga:1.0.1")
+    implementation("com.github.smart-zeng.MicSprite:micsprite-compose:1.0.1")
     // 需要 PAG / GIF / WebP 时再加：
-    // implementation("io.github.smart-zeng:micsprite-decoder-pag:1.0.0")
-    // implementation("io.github.smart-zeng:micsprite-decoder-frames:1.0.0")
+    // implementation("com.github.smart-zeng.MicSprite:micsprite-decoder-pag:1.0.1")
+    // implementation("com.github.smart-zeng.MicSprite:micsprite-decoder-frames:1.0.1")
     // View 壳：
-    // implementation("io.github.smart-zeng:micsprite-view:1.0.0")
+    // implementation("com.github.smart-zeng.MicSprite:micsprite-view:1.0.1")
 }
 ```
 
@@ -45,13 +60,13 @@ dependencies {
 android {
     packaging {
         resources {
-            merges += "META-INF/services/io.github.smartzeng.micsprite.core.MicSpriteDecoder"
+            merges += "META-INF/services/com.github.smartzeng.micsprite.core.MicSpriteDecoder"
         }
     }
 }
 ```
 
-仓库需要 [JitPack](https://jitpack.io)（SVGAPlayer 走 JitPack）。App 需要 `INTERNET` 权限。
+App 需要 `INTERNET` 权限。SVGAPlayer 也走 JitPack，已包含在上列仓库配置里。
 
 Decoder 对重 SDK 使用 `implementation`，不会传到接入方的编译 classpath；运行时仍会打进 APK。只引某个 decoder 时，对应三方库才会进包。
 
@@ -110,11 +125,11 @@ GIF 解析失败时回退系统 `Movie`。只在引入本模块或 `micsprite-al
 
 ```proguard
 # MicSprite：不要再混淆本库
--keep class io.github.smartzeng.micsprite.** { *; }
--dontwarn io.github.smartzeng.micsprite.**
+-keep class com.github.smartzeng.micsprite.** { *; }
+-dontwarn com.github.smartzeng.micsprite.**
 
--keep interface io.github.smartzeng.micsprite.core.MicSpriteDecoder { *; }
--keep class * implements io.github.smartzeng.micsprite.core.MicSpriteDecoder {
+-keep interface com.github.smartzeng.micsprite.core.MicSpriteDecoder { *; }
+-keep class * implements com.github.smartzeng.micsprite.core.MicSpriteDecoder {
     public <init>();
 }
 
@@ -206,7 +221,7 @@ override fun onTrimMemory(level: Int) {
 
 ## 注入解码器
 
-官方 `micsprite-decoder-*` 不是必须的。实现 `MicSpriteDecoder`，在首次烘焙前调用 `MicSpriteDecoderRegistry.register` 即可；也可把实现类名写进 `META-INF/services/io.github.smartzeng.micsprite.core.MicSpriteDecoder`，由 ServiceLoader 自动发现。
+官方 `micsprite-decoder-*` 不是必须的。实现 `MicSpriteDecoder`，在首次烘焙前调用 `MicSpriteDecoderRegistry.register` 即可；也可把实现类名写进 `META-INF/services/com.github.smartzeng.micsprite.core.MicSpriteDecoder`，由 ServiceLoader 自动发现。
 
 `supports` 决定这个 decoder 认哪些 url；`bake` 返回网格图集 `MicSpriteRaster`（像素需预乘 alpha）。可用 `MicSpriteBaker.materialize` 下载到本地，再用 `MicSpriteBaker.buildStrip` / `drawFitCenter` 抽帧。
 
@@ -241,8 +256,8 @@ MicSpriteDecoderRegistry.register(MyDecoder())
 注册后只依赖：
 
 ```kotlin
-implementation("io.github.smart-zeng:micsprite-core:1.0.0")
-implementation("io.github.smart-zeng:micsprite-compose:1.0.0") // 或 micsprite-view
+implementation("com.github.smart-zeng.MicSprite:micsprite-core:1.0.1")
+implementation("com.github.smart-zeng.MicSprite:micsprite-compose:1.0.1") // 或 micsprite-view
 ```
 
 官方 decoder 与自定义 decoder 可并存；`resolve` 按注册顺序取第一个 `supports(url) == true` 的实现。

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "io.github.smartzeng.micsprite.decoder.frames"
+    namespace = "com.github.smartzeng.micsprite.decoder.frames"
     compileSdk {
         version = release(37)
     }
