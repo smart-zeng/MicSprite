@@ -6,8 +6,8 @@
 
 ```kotlin
 dependencies {
-    implementation("io.github.smartzeng:micsprite-all:1.0.0")
-    implementation("io.github.smartzeng:micsprite-compose:1.0.0")
+    implementation("io.github.smart-zeng:micsprite-all:1.0.0")
+    implementation("io.github.smart-zeng:micsprite-compose:1.0.0")
     // 或 View：
     // implementation("io.github.smartzeng:micsprite-view:1.0.0")
 }
