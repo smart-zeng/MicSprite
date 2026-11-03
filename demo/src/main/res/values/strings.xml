@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MicSprite Demo</string>
+    <string name="compose_demo">Compose 示例</string>
+    <string name="view_demo">View 示例</string>
+</resources>

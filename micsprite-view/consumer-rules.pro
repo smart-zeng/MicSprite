@@ -1,0 +1,2 @@
+-keep class io.github.smartzeng.micsprite.view.** { *; }
+-dontwarn io.github.smartzeng.micsprite.view.**
