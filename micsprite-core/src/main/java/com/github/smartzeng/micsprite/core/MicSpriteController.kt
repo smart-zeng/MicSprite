@@ -66,11 +66,6 @@ class MicSpriteController(
         }
     }
 
-    init {
-        MicSpriteBaker.registerClient()
-    }
-
-
     fun setSeats(seats: List<MicSpriteSeat>) {
         if (released) return
         seatById.clear()
@@ -173,7 +168,6 @@ class MicSpriteController(
         scope.cancel()
         detachSurface()
         renderer.release()
-        MicSpriteBaker.unregisterClient()
     }
 
     override fun queue(block: () -> Unit) {

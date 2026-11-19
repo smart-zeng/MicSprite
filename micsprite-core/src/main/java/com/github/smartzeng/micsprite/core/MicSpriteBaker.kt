@@ -13,7 +13,6 @@ import java.io.File
 import java.io.IOException
 import java.security.MessageDigest
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -37,7 +36,6 @@ object MicSpriteBaker {
 
     private val inFlight = ConcurrentHashMap<String, Deferred<MicSpriteFrameStrip?>>()
     private val downloadMsByUrl = ConcurrentHashMap<String, Long>()
-    private val clients = AtomicInteger(0)
     private val bakeScope = CoroutineScope(
         SupervisorJob() + Dispatchers.Default + CoroutineExceptionHandler { _, error ->
             MicSpriteConfig.logger.w("headwear bake scope", error)
@@ -91,20 +89,6 @@ object MicSpriteBaker {
             }
         }
         return created.await()
-    }
-
-    internal fun registerClient() {
-        clients.incrementAndGet()
-    }
-
-    internal fun unregisterClient() {
-        val left = clients.updateAndGet { current -> (current - 1).coerceAtLeast(0) }
-        if (left == 0) clearMemoryCache()
-    }
-
-
-    fun clearMemoryCache() {
-        MicSpriteStripCache.clearMemory()
     }
 
     private suspend fun bakeOnce(

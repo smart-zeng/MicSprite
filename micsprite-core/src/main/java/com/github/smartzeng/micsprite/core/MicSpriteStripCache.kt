@@ -10,22 +10,11 @@ import kotlinx.coroutines.CancellationException
 
 object MicSpriteStripCache {
     private const val dirName = "headwear_strips"
-    private const val maxMemoryEntries = 16
 
     private const val staleTmpMs = 10 * 60_000L
 
-    private val memoryLock = Any()
-    private val memory = LinkedHashMap<String, MicSpriteFrameStrip>(16, 0.75f, true)
-
     fun load(context: Context, url: String, maxTextureSize: Int): MicSpriteFrameStrip? {
         val key = cacheKey(url, maxTextureSize)
-        synchronized(memoryLock) {
-            val mem = memory[key]
-            if (mem != null) {
-                if (!mem.atlas.isRecycled) return mem.retain()
-                memory.remove(key)
-            }
-        }
         val dir = directory(context)
         val image = File(dir, "$key.webp")
         val meta = File(dir, "$key.meta")
@@ -87,16 +76,13 @@ object MicSpriteStripCache {
             return null
         }
         image.setLastModified(System.currentTimeMillis())
-        val strip = MicSpriteFrameStrip(url, bitmap, frameCount, fps, frameSize, startFrame, cols, rows)
-        remember(key, strip)
-        return strip
+        return MicSpriteFrameStrip(url, bitmap, frameCount, fps, frameSize, startFrame, cols, rows)
     }
 
     fun save(context: Context, strip: MicSpriteFrameStrip, maxTextureSize: Int) {
         if (strip.atlas.isRecycled) return
         val dir = directory(context)
         val key = cacheKey(strip.url, maxTextureSize)
-        remember(key, strip)
         val image = File(dir, "$key.webp")
         val meta = File(dir, "$key.meta")
         val temp = File(dir, "$key.webp.tmp")
@@ -149,26 +135,6 @@ object MicSpriteStripCache {
         image.setLastModified(System.currentTimeMillis())
         deleteLegacyPng(dir, key)
         evict(dir)
-    }
-
-    fun clearMemory() {
-        synchronized(memoryLock) {
-            memory.values.forEach { it.release() }
-            memory.clear()
-        }
-    }
-
-    private fun remember(key: String, strip: MicSpriteFrameStrip) {
-        if (strip.atlas.isRecycled) return
-        synchronized(memoryLock) {
-            val previous = memory.put(key, strip.retain())
-            previous?.release()
-            while (memory.size > maxMemoryEntries) {
-                val eldest = memory.entries.iterator().next()
-                memory.remove(eldest.key)
-                eldest.value.release()
-            }
-        }
     }
 
     private fun cacheKey(url: String, maxTextureSize: Int): String =
